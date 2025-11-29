@@ -1,7 +1,9 @@
-﻿namespace Todo
+﻿using Todo.Core;
+
+namespace Todo
 {
     internal interface IConsoleAction
     {
-        void Execute(string input);
+        Result<string, string> Execute(string input);
     }
 }

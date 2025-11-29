@@ -1,14 +1,16 @@
-﻿using Todo.Core;
+﻿using System.Diagnostics;
+using Todo.Core;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Todo
 {
     internal class ConsoleKeyHandler(ITodoManager manager) : IConsoleKeyHandler
     {
-        private Queue<ConsoleKeyInfo> _enteredKeys = [];
+        private Stack<ConsoleKeyInfo> _enteredKeys = [];
 
         public bool Handle(ConsoleKeyInfo keyInfo)
         {
-            if (keyInfo.Key == ConsoleKey.Q && keyInfo.Modifiers == ConsoleModifiers.Control)
+            if (keyInfo.Key == ConsoleKey.C && keyInfo.Modifiers == ConsoleModifiers.Control)
             {
                 return false;
             }
@@ -21,9 +23,9 @@ namespace Todo
                 return true;
             }
 
-            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers == ConsoleModifiers.Control && ConsoleUI.InputMode != InputMode.None)
+            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers == ConsoleModifiers.Control && ConsoleUI.InputMode != InputMode.List)
             {
-                ConsoleUI.InputMode = InputMode.None;
+                ConsoleUI.InputMode = InputMode.List;
                 ConsoleUI.Clear();
 
                 _enteredKeys.Clear();
@@ -41,49 +43,90 @@ namespace Todo
                 return true;
             }
 
+            if (keyInfo.Key == ConsoleKey.Backspace && _enteredKeys.Count > 0 && _enteredKeys.TryPop(out _))
+            {
+                Console.Write(" ");
+                if (Console.CursorLeft > 0)
+                {
+                    Console.CursorLeft--;
+                }
+
+                return true;
+            }
+                
             if (keyInfo.Key == ConsoleKey.Enter)
             {
-                // process the entered keys based on the input mode
                 var text = "";
 
-                while (_enteredKeys.TryDequeue(out ConsoleKeyInfo info))
+                while (_enteredKeys.TryPop(out ConsoleKeyInfo info))
                 {
-                    text += info.KeyChar;
+                    text = info.KeyChar + text;
                 }
 
                 try
                 {
-                    HandleEnter(text);
-                    ConsoleUI.InputMode = InputMode.None;
-                    ConsoleUI.Clear();
+                    var result = HandleEnter(text);
+
+                    if (result != null)
+                    {
+                        if (result.Success is not null){
+                            ConsoleUI.InputMode = InputMode.List;
+                            ConsoleUI.Clear();
+
+                            var currentColor = Console.ForegroundColor;
+
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
+                            Console.WriteLine(result.Success);
+
+                            Console.ForegroundColor = currentColor;
+                        }
+                        else if (result.Error is not null)
+                        {
+                            ConsoleUI.Clear();
+
+                            var currentColor = Console.ForegroundColor;
+
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine(result.Error);
+
+                            Console.ForegroundColor = currentColor;
+                        }
+                    }
+                    else
+                    {
+                        ConsoleUI.Clear();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    ConsoleUI.InputMode = InputMode.None;
                     ConsoleUI.Clear();
                     Console.WriteLine(ex.Message);
                 }
             }
             else
             {
-                _enteredKeys.Enqueue(keyInfo);
+                _enteredKeys.Push(keyInfo);
             }
 
             return true;
         }
 
-        private void HandleEnter(string text)
+        private Result<string, string>? HandleEnter(string text)
         {
-                if (ConsoleUI.InputMode == InputMode.Adding)
-                {
-                    var asd = new AddTodoConsoleAction(manager);
-                    asd.Execute(text);
-                }
-                else if (ConsoleUI.InputMode == InputMode.Saving)
-                {
-                    var asd = new SaveChangesConsoleAction(manager);
-                    asd.Execute(text);
-                }
+            Debug.WriteLine($"{ConsoleUI.InputMode} - {text}");
+
+            if (ConsoleUI.InputMode == InputMode.Adding)
+            {
+                var addTodoConsoleAction = new AddTodoConsoleAction(manager);
+                return addTodoConsoleAction.Execute(text);
+            }
+            else if (ConsoleUI.InputMode == InputMode.Saving)
+            {
+                var saveChangesConsoleAction = new SaveChangesConsoleAction(manager);
+                return saveChangesConsoleAction.Execute(text);
+            }
+
+            return null;
         }
     }
 }

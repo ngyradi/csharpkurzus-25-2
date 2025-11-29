@@ -2,7 +2,7 @@
 {
     public interface ITodoManager
     {
-        void Save();
+        Result<string, string> Save();
         void Load();
         void Add(TodoItem item);
         IEnumerable<TodoItem> GetTodoItems();

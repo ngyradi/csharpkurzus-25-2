@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Todo.Core
@@ -35,11 +36,11 @@ namespace Todo.Core
             }
             catch (IOException ex)
             {
-                return;
+                Debug.WriteLine($"Failed to load save file: {ex.Message}");
             }
         }
 
-        public void Save()
+        public Result<string, string> Save()
         {
             try
             {
@@ -47,16 +48,18 @@ namespace Todo.Core
 
                 try
                 {
+
                     File.WriteAllText(savePath, json);
+                    return new Result<string, string>(success: "Save successful");
                 }
                 catch (IOException ex)
                 {
-                    // Not able to write file
+                    return new Result<string, string>(error: $"Failed to save file: {ex.Message}");
                 }
             }
             catch (Exception ex)
             {
-                // Data is not able to be serialized
+                return new Result<string, string>(error: $"Unexpected error ocurred while saving: {ex.Message}");
             }
         }
     }

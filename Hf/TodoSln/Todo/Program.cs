@@ -7,6 +7,8 @@ namespace Todo
     {
         private static void Main(string[] args)
         {
+            Console.TreatControlCAsInput = true;
+
             var savePath = Path.Combine(AppContext.BaseDirectory, "save.json");
             ITodoManager manager = new JsonTodoManager(savePath);
             manager.Load();
