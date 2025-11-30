@@ -62,5 +62,11 @@ namespace Todo.Core
                 return new Result<string, string>(error: $"Unexpected error ocurred while saving: {ex.Message}");
             }
         }
+
+        public void Update(TodoItem original, TodoItem updated)
+        {
+            _items.Remove(original);
+            _items.Add(updated);
+        }
     }
 }

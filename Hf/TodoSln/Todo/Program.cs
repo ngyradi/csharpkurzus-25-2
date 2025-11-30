@@ -15,9 +15,7 @@ namespace Todo
             ITodoManager manager = new JsonTodoManager(savePath);
             manager.Load();
 
-            IConsoleTodoView todoView = new ConsoleTodoView();
-
-            IConsoleKeyHandler keyHandler = new ConsoleKeyHandler(manager, todoView);
+            IConsoleKeyHandler keyHandler = new ConsoleKeyHandler(manager);
 
             ConsoleUI.Clear();
 

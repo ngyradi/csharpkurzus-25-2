@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics;
 using Todo.Core;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Todo
 {
-    internal class ConsoleKeyHandler(ITodoManager manager, IConsoleTodoView todoView) : IConsoleKeyHandler
+    internal class ConsoleKeyHandler(ITodoManager manager) : IConsoleKeyHandler
     {
         private Stack<ConsoleKeyInfo> _enteredKeys = [];
+
+        private IConsoleView? _view = null;
 
         public bool Handle(ConsoleKeyInfo keyInfo)
         {
@@ -33,7 +34,7 @@ namespace Todo
             {
                 SwitchInputMode(InputMode.Listing);
 
-                todoView.WriteTodos(manager.GetTodoItems());
+                _view = new ConsoleTodoView(manager);
 
                 return true;
             }
@@ -57,8 +58,10 @@ namespace Todo
 
                 return true;
             }
-                
-            if (keyInfo.Key == ConsoleKey.Enter)
+
+            _view?.HandleKey(keyInfo);
+
+            if (_view is null && keyInfo.Key == ConsoleKey.Enter)
             {
                 var text = "";
 
@@ -73,7 +76,8 @@ namespace Todo
 
                     if (result != null)
                     {
-                        if (result.Success is not null){
+                        if (result.Success is not null)
+                        {
                             ConsoleUI.InputMode = InputMode.None;
                             ConsoleUI.Clear();
 
@@ -119,6 +123,16 @@ namespace Todo
         {
             ConsoleUI.InputMode = inputMode;
             ConsoleUI.Clear();
+
+            if (inputMode == InputMode.Listing)
+            {
+                Console.CursorVisible = false;
+            }
+            else
+            {
+                Console.CursorVisible = true;
+                _view = null;
+            }
 
             _enteredKeys.Clear();
         }

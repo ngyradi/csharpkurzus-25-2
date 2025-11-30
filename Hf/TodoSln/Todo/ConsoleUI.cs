@@ -34,6 +34,15 @@
             Console.CursorVisible = true;
         }
 
+        public static void ClearRegion(int startX, int startY, int width, int height)
+        {
+            for (int y = startY; y < startY + height; y++)
+            {
+                Console.SetCursorPosition(startX, y);
+                Console.Write(" ".PadRight(width));
+            }
+        }
+
         private static void WriteInfoText()
         {
             var currentForeground = Console.ForegroundColor;
