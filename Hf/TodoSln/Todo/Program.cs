@@ -1,4 +1,5 @@
-﻿using Todo.Core;
+﻿using System.Text;
+using Todo.Core;
 
 namespace Todo
 {
@@ -8,13 +9,15 @@ namespace Todo
         private static void Main(string[] args)
         {
             Console.TreatControlCAsInput = true;
+            Console.OutputEncoding = Encoding.UTF8;
 
             var savePath = Path.Combine(AppContext.BaseDirectory, "save.json");
             ITodoManager manager = new JsonTodoManager(savePath);
             manager.Load();
 
+            IConsoleTodoView todoView = new ConsoleTodoView();
 
-            IConsoleKeyHandler keyHandler = new ConsoleKeyHandler(manager);
+            IConsoleKeyHandler keyHandler = new ConsoleKeyHandler(manager, todoView);
 
             ConsoleUI.Clear();
 

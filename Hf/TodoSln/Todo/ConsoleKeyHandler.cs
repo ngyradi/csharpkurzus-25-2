@@ -4,7 +4,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Todo
 {
-    internal class ConsoleKeyHandler(ITodoManager manager) : IConsoleKeyHandler
+    internal class ConsoleKeyHandler(ITodoManager manager, IConsoleTodoView todoView) : IConsoleKeyHandler
     {
         private Stack<ConsoleKeyInfo> _enteredKeys = [];
 
@@ -32,6 +32,8 @@ namespace Todo
             if (keyInfo.Key == ConsoleKey.W && keyInfo.Modifiers == ConsoleModifiers.Control)
             {
                 SwitchInputMode(InputMode.Listing);
+
+                todoView.WriteTodos(manager.GetTodoItems());
 
                 return true;
             }
