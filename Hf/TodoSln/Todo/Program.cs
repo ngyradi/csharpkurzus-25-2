@@ -17,9 +17,6 @@ namespace Todo
 
             IConsoleKeyHandler keyHandler = new ConsoleKeyHandler(manager);
 
-            ConsoleUI.Clear();
-
-
             ConsoleKeyInfo keyInfo;
             do
             {

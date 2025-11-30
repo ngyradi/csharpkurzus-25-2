@@ -3,11 +3,21 @@ using Todo.Core;
 
 namespace Todo
 {
-    internal class ConsoleKeyHandler(ITodoManager manager) : IConsoleKeyHandler
+    internal class ConsoleKeyHandler : IConsoleKeyHandler
     {
-        private Stack<ConsoleKeyInfo> _enteredKeys = [];
-
+        private readonly ITodoManager _manager;
         private IConsoleView? _view = null;
+
+        private readonly Stack<ConsoleKeyInfo> _enteredKeys;
+
+
+        public ConsoleKeyHandler(ITodoManager manager)
+        {
+            _manager = manager;
+            _enteredKeys = [];
+
+            SwitchInputMode(InputMode.None);
+        }
 
         public bool Handle(ConsoleKeyInfo keyInfo)
         {
@@ -33,8 +43,6 @@ namespace Todo
             if (keyInfo.Key == ConsoleKey.W && keyInfo.Modifiers == ConsoleModifiers.Control)
             {
                 SwitchInputMode(InputMode.Listing);
-
-                _view = new ConsoleTodoView(manager);
 
                 return true;
             }
@@ -127,6 +135,12 @@ namespace Todo
             if (inputMode == InputMode.Listing)
             {
                 Console.CursorVisible = false;
+                _view = new ConsoleTodoView(_manager);
+            }
+            else if (inputMode == InputMode.None)
+            {
+                Console.CursorVisible = false;
+                _view = new ConsoleDefaultView(_manager);
             }
             else
             {
@@ -143,12 +157,12 @@ namespace Todo
 
             if (ConsoleUI.InputMode == InputMode.Adding)
             {
-                var addTodoConsoleAction = new AddTodoConsoleAction(manager);
+                var addTodoConsoleAction = new AddTodoConsoleAction(_manager);
                 return addTodoConsoleAction.Execute(text);
             }
             else if (ConsoleUI.InputMode == InputMode.Saving)
             {
-                var saveChangesConsoleAction = new SaveChangesConsoleAction(manager);
+                var saveChangesConsoleAction = new SaveChangesConsoleAction(_manager);
                 return saveChangesConsoleAction.Execute(text);
             }
 

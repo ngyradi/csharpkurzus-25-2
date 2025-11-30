@@ -124,7 +124,7 @@ namespace Todo
             foreach (var item in TodosPending.Skip(pendingColumnScroll).Take(columnHeight))
             {
                 bool isSelected = lineNum == 0 && isPendingColumnSelected;
-                WriteTodo(item, isSelected, 0, 2 + lineNum, columnWidth);
+                ConsoleUI.WriteTodo(item, isSelected, 0, 2 + lineNum, columnWidth);
 
                 lineNum++;
             }
@@ -146,7 +146,7 @@ namespace Todo
             foreach (var item in TodosDone.Skip(doneColumnScroll).Take(columnHeight))
             {
                 bool isSelected = lineNum == 0 && !isPendingColumnSelected;
-                WriteTodo(item, isSelected, columnWidth + 1, 2 + lineNum, columnWidth);
+                ConsoleUI.WriteTodo(item, isSelected, columnWidth + 1, 2 + lineNum, columnWidth);
 
                 lineNum++;
             }
@@ -168,51 +168,6 @@ namespace Todo
             }
 
             return false;
-        }
-
-        private void WriteTodo(TodoItem todo, bool isSelected, int x, int y, int maxWidth)
-        {
-            var currentBgColor = Console.BackgroundColor;
-
-            if (isSelected)
-            {
-                Console.BackgroundColor = ConsoleColor.DarkGray;
-            }
-
-            string title = isSelected ? $">{todo.Title}" : todo.Title;
-            string description = todo.Description;
-            string dueDate = todo.DueDate.ToShortDateString();
-
-            title += " ";
-            description += " ";
-
-            int remainingWidth = maxWidth - dueDate.Length;
-
-            if (title.Length > remainingWidth / 2)
-            {
-                title = string.Concat(title.AsSpan(0, remainingWidth / 2 - 4), "... ");
-            }
-
-            if (description.Length > remainingWidth / 2)
-            {
-                description = string.Concat(description.AsSpan(0, remainingWidth / 2 - 4), "... ");
-            }
-
-            dueDate = dueDate.PadLeft(maxWidth - (title.Length + description.Length), ' ');
-
-            Console.SetCursorPosition(x, y);
-            Console.Write(new string(' ', maxWidth));
-
-            Console.SetCursorPosition(x, y);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(title);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write(description);
-
-            Console.SetCursorPosition(x + maxWidth - dueDate.Length, y);
-            Console.Write(dueDate);
-
-            Console.BackgroundColor = currentBgColor;
         }
 
         private void WriteSeparator(int x, int y, int height, int scrollValue, int maxScrollValue)
