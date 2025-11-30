@@ -2,8 +2,9 @@
 {
     internal enum InputMode
     {
-        List,
+        None,
         Adding,
-        Saving
+        Saving,
+        Listing,
     }
 }

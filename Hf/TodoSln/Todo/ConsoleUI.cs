@@ -7,10 +7,11 @@
 
         public static int Width => Console.BufferWidth;
 
-        public static InputMode InputMode { get; set; } = InputMode.List;
+        public static InputMode InputMode { get; set; } = InputMode.None;
 
         public static void Clear()
         {
+            Console.CursorVisible = false;
             Console.Clear();
             Console.SetCursorPosition(0, Height - 1);
 
@@ -20,13 +21,9 @@
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
 
-            string text = $"^C - Close{_whitespace}^A - Add todo{_whitespace}^X - View todos{_whitespace}^K - Save changes";
+            string text = $"^C - Close{_whitespace}^A - Add todo{_whitespace}^W - View todos{_whitespace}^K - Save changes{_whitespace}^X - Clear";
 
-            Console.Write(text);
-            for (int i = 0; i < Width - text.Length; i++)
-            {
-                Console.Write(' ');
-            }
+            Console.Write(text.PadRight(Width));
 
             Console.SetCursorPosition(0, 0);
 
@@ -34,6 +31,7 @@
             Console.ForegroundColor = currentForeground;
 
             WriteInfoText();
+            Console.CursorVisible = true;
         }
 
         private static void WriteInfoText()
@@ -42,7 +40,7 @@
 
             Console.ForegroundColor = ConsoleColor.Magenta;
 
-            if (InputMode == InputMode.List)
+            if (InputMode == InputMode.Listing)
             {
                 var text = "Viewing todos";
                 Console.SetCursorPosition((Width / 2) - (text.Length / 2), 0);

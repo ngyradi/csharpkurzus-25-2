@@ -15,28 +15,30 @@ namespace Todo
                 return false;
             }
 
-            if (keyInfo.Key == ConsoleKey.A && keyInfo.Modifiers == ConsoleModifiers.Control && ConsoleUI.InputMode != InputMode.Adding)
+            if (keyInfo.Key == ConsoleKey.A && keyInfo.Modifiers == ConsoleModifiers.Control)
             {
-                ConsoleUI.InputMode = InputMode.Adding;
-                ConsoleUI.Clear();
+                SwitchInputMode(InputMode.Adding);
 
                 return true;
             }
 
-            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers == ConsoleModifiers.Control && ConsoleUI.InputMode != InputMode.List)
+            if (keyInfo.Key == ConsoleKey.X && keyInfo.Modifiers == ConsoleModifiers.Control)
             {
-                ConsoleUI.InputMode = InputMode.List;
-                ConsoleUI.Clear();
-
-                _enteredKeys.Clear();
+                SwitchInputMode(InputMode.None);
 
                 return true;
             }
 
-            if (keyInfo.Key == ConsoleKey.K && keyInfo.Modifiers == ConsoleModifiers.Control && ConsoleUI.InputMode != InputMode.Saving)
+            if (keyInfo.Key == ConsoleKey.W && keyInfo.Modifiers == ConsoleModifiers.Control)
             {
-                ConsoleUI.InputMode = InputMode.Saving;
-                ConsoleUI.Clear();
+                SwitchInputMode(InputMode.Listing);
+
+                return true;
+            }
+
+            if (keyInfo.Key == ConsoleKey.K && keyInfo.Modifiers == ConsoleModifiers.Control)
+            {
+                SwitchInputMode(InputMode.Saving);
 
                 Console.WriteLine("Type 'y' to save");
 
@@ -70,7 +72,7 @@ namespace Todo
                     if (result != null)
                     {
                         if (result.Success is not null){
-                            ConsoleUI.InputMode = InputMode.List;
+                            ConsoleUI.InputMode = InputMode.None;
                             ConsoleUI.Clear();
 
                             var currentColor = Console.ForegroundColor;
@@ -109,6 +111,14 @@ namespace Todo
             }
 
             return true;
+        }
+
+        private void SwitchInputMode(InputMode inputMode)
+        {
+            ConsoleUI.InputMode = inputMode;
+            ConsoleUI.Clear();
+
+            _enteredKeys.Clear();
         }
 
         private Result<string, string>? HandleEnter(string text)
