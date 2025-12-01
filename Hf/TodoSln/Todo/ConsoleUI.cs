@@ -9,8 +9,6 @@ namespace Todo
 
         public static int Width => Console.BufferWidth;
 
-        public static InputMode InputMode { get; set; } = InputMode.None;
-
         public static void Clear()
         {
             Console.ResetColor();
@@ -33,7 +31,6 @@ namespace Todo
             Console.BackgroundColor = currentBackground;
             Console.ForegroundColor = currentForeground;
 
-            WriteInfoText();
             Console.CursorVisible = true;
         }
 
@@ -44,38 +41,6 @@ namespace Todo
                 Console.SetCursorPosition(startX, y);
                 Console.Write(" ".PadRight(width));
             }
-        }
-
-        private static void WriteInfoText()
-        {
-            var currentForeground = Console.ForegroundColor;
-
-            Console.ForegroundColor = ConsoleColor.Magenta;
-
-            if (InputMode == InputMode.Listing)
-            {
-                var text = "Viewing todos";
-                Console.SetCursorPosition((Width / 2) - (text.Length / 2), 0);
-                Console.WriteLine(text);
-            }
-            else if (InputMode == InputMode.Adding)
-            {
-                var text = "Adding new Todo";
-                Console.SetCursorPosition((Width / 2) - (text.Length / 2), 0);
-                Console.WriteLine(text);
-
-                Console.ForegroundColor = ConsoleColor.DarkBlue;
-
-                Console.WriteLine("Title;Description;DueDate");
-            }
-            else if (InputMode == InputMode.Saving)
-            {
-                var text = "Are you sure you want to save the changes?";
-                Console.SetCursorPosition((Width / 2) - (text.Length / 2), 0);
-                Console.WriteLine(text);
-            }
-
-            Console.ForegroundColor = currentForeground;
         }
 
         public static void WriteTodo(TodoItem todo, bool isSelected, int x, int y, int maxWidth)

@@ -10,6 +10,7 @@ namespace Todo.Views
         {
             _manager = manager;
 
+            Console.CursorVisible = false;
             Write(_manager.GetTodoItems());
         }
 

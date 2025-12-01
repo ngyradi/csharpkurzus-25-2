@@ -23,6 +23,9 @@ namespace Todo.Views
 
             _todoItems = _manager.GetTodoItems().OrderByDescending(todo => todo.DueDate);
 
+            Console.CursorVisible = false;
+
+            WriteHeader();
             Write();
         }
 
@@ -152,6 +155,18 @@ namespace Todo.Views
             }
 
             WriteSeparator(columnWidth, 1, columnHeight, isPendingColumnSelected ? pendingColumnScroll : doneColumnScroll, isPendingColumnSelected ? TodosPending.Length : TodosDone.Length);
+        }
+
+        private void WriteHeader()
+        {
+            var currentFgColor = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            var text = "Viewing todos";
+            Console.SetCursorPosition((ConsoleUI.Width / 2) - (text.Length / 2), 0);
+            Console.WriteLine(text);
+
+            Console.ForegroundColor = currentFgColor;
         }
 
         private bool ScrollColumn(ref int columnScroll, bool up, int maxScroll)
