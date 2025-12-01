@@ -1,6 +1,6 @@
-﻿namespace Todo.Views
+﻿namespace Todo.UI
 {
-    internal interface IConsoleView
+    public interface ICharacterView
     {
         void HandleKey(ConsoleKeyInfo keyInfo);
     }

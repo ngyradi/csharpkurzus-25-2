@@ -1,6 +1,6 @@
-﻿namespace Todo
+﻿namespace Todo.UI
 {
-    internal enum InputMode
+    public enum InputMode
     {
         None,
         Adding,

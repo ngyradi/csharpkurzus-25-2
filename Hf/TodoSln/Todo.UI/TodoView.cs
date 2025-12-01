@@ -1,12 +1,13 @@
-﻿using System.Diagnostics;
-using Todo.Core;
+﻿using Todo.Core;
 
-namespace Todo.Views
+namespace Todo.UI
 {
-    internal class ConsoleTodoView : IConsoleView
+    internal class TodoView : ICharacterView
     {
         private const char SeparatorCharacter = '┃';
 
+        private readonly ICharacterDisplay _characterDisplay;
+        private readonly IViewUtils _viewUtils;
         private readonly ITodoManager _manager;
         private readonly IEnumerable<TodoItem> _todoItems;
 
@@ -14,18 +15,20 @@ namespace Todo.Views
         private int doneColumnScroll;
         private bool isPendingColumnSelected;
 
-
-        public ConsoleTodoView(ITodoManager manager)
+        public TodoView(ITodoManager manager, IViewUtils viewUtils, ICharacterDisplay characterDisplay)
         {
             pendingColumnScroll = 0;
             doneColumnScroll = 0;
             isPendingColumnSelected = true;
 
             _manager = manager;
+            _characterDisplay = characterDisplay;
+            _viewUtils = viewUtils;
 
             _todoItems = _manager.GetTodoItems().OrderByDescending(todo => todo.DueDate);
 
-            Console.CursorVisible = false;
+            _viewUtils.ClearAndWriteControls();
+            _characterDisplay.CursorVisible = false;
 
             WriteHeader();
             Write();
@@ -43,19 +46,16 @@ namespace Todo.Views
                 isPendingColumnSelected = false;
                 shouldRewrite = true;
             }
-
-            if (keyInfo.Key == ConsoleKey.LeftArrow && !isPendingColumnSelected)
+            else if (keyInfo.Key == ConsoleKey.LeftArrow && !isPendingColumnSelected)
             {
                 isPendingColumnSelected = true;
                 shouldRewrite = true;
             }
-
-            if (keyInfo.Key == ConsoleKey.DownArrow || keyInfo.Key == ConsoleKey.UpArrow)
+            else if (keyInfo.Key == ConsoleKey.DownArrow || keyInfo.Key == ConsoleKey.UpArrow)
             {
                 shouldRewrite |= HandleScroll(keyInfo.Key == ConsoleKey.UpArrow);
             }
-
-            if (keyInfo.Key == ConsoleKey.Enter)
+            else if (keyInfo.Key == ConsoleKey.Enter)
             {
                 var maybeTodo = FindSelectedTodo();
 
@@ -102,10 +102,10 @@ namespace Todo.Views
 
         private void Write()
         {
-            ConsoleUI.ClearRegion(0, 1, ConsoleUI.Width, ConsoleUI.Height - 2);
+            _viewUtils.ClearRegion(0, 1, _characterDisplay.Width, _characterDisplay.Height - 2);
 
-            int columnWidth = ConsoleUI.Width / 2 - 1;
-            int columnHeight = ConsoleUI.Height - 3;
+            int columnWidth = _characterDisplay.Width / 2 - 1;
+            int columnHeight = _characterDisplay.Height - 3;
             int lineNum = 0;
 
             var pendingTextColor = isPendingColumnSelected ? ConsoleColor.White : ConsoleColor.Black;
@@ -113,15 +113,15 @@ namespace Todo.Views
             string pendingText = "Pending";
             Console.SetCursorPosition(0, 1);
 
-            ConsoleUI.WrapWithColors(() =>
+            _viewUtils.WrapWithColors(() =>
             {
-                ConsoleUI.WriteCenteredText(pendingText, columnWidth);
+                _viewUtils.WriteCenteredText(pendingText, columnWidth);
             }, foregroundColor: ConsoleColor.Red, backgroundColor: pendingTextColor);
 
             foreach (var item in TodosPending.Skip(pendingColumnScroll).Take(columnHeight))
             {
                 bool isSelected = lineNum == 0 && isPendingColumnSelected;
-                ConsoleUI.WriteTodo(item, isSelected, 0, 2 + lineNum, columnWidth);
+                _viewUtils.WriteTodo(item, isSelected, 0, 2 + lineNum, columnWidth);
 
                 lineNum++;
             }
@@ -129,18 +129,18 @@ namespace Todo.Views
             var doneTextColor = !isPendingColumnSelected ? ConsoleColor.White : ConsoleColor.Black;
 
             string doneText = "Done";
-            Console.SetCursorPosition(columnWidth + 1, 1);
+            _characterDisplay.SetCursorPosition(columnWidth + 1, 1);
 
-            ConsoleUI.WrapWithColors(() =>
+            _viewUtils.WrapWithColors(() =>
             {
-                ConsoleUI.WriteCenteredText(doneText, columnWidth);
+                _viewUtils.WriteCenteredText(doneText, columnWidth);
             }, foregroundColor: ConsoleColor.Green, backgroundColor: doneTextColor);
 
             lineNum = 0;
             foreach (var item in TodosDone.Skip(doneColumnScroll).Take(columnHeight))
             {
                 bool isSelected = lineNum == 0 && !isPendingColumnSelected;
-                ConsoleUI.WriteTodo(item, isSelected, columnWidth + 1, 2 + lineNum, columnWidth);
+                _viewUtils.WriteTodo(item, isSelected, columnWidth + 1, 2 + lineNum, columnWidth);
 
                 lineNum++;
             }
@@ -150,11 +150,11 @@ namespace Todo.Views
 
         private void WriteHeader()
         {
-            ConsoleUI.WrapWithColors(() =>
+            _viewUtils.WrapWithColors(() =>
             {
                 var text = "Viewing todos";
-                Console.SetCursorPosition((ConsoleUI.Width / 2) - (text.Length / 2), 0);
-                Console.WriteLine(text);
+                _characterDisplay.SetCursorPosition(_characterDisplay.Width / 2 - text.Length / 2, 0);
+                _characterDisplay.WriteLine(text);
             }, foregroundColor: ConsoleColor.Magenta);
         }
 
@@ -181,7 +181,7 @@ namespace Todo.Views
             bool scrollWritten = false;
             for (int i = 0; i <= height; i++)
             {
-                Console.SetCursorPosition(x, y + i);
+                _characterDisplay.SetCursorPosition(x, y + i);
 
                 float columnPercent = i / (float)height;
 
@@ -189,14 +189,14 @@ namespace Todo.Views
                 {
                     scrollWritten = true;
 
-                    ConsoleUI.WrapWithColors(() =>
+                    _viewUtils.WrapWithColors(() =>
                     {
-                        Console.Write(SeparatorCharacter);
+                        _characterDisplay.Write(SeparatorCharacter);
                     }, foregroundColor: ConsoleColor.Magenta);
                 }
                 else
                 {
-                    Console.Write(SeparatorCharacter);
+                    _characterDisplay.Write(SeparatorCharacter);
                 }
 
             }
@@ -208,10 +208,8 @@ namespace Todo.Views
             {
                 return TodosPending.Skip(pendingColumnScroll).Take(1).FirstOrDefault();
             }
-            else
-            {
-                return TodosDone.Skip(doneColumnScroll).Take(1).FirstOrDefault();
-            }
+
+            return TodosDone.Skip(doneColumnScroll).Take(1).FirstOrDefault();
         }
     }
 }

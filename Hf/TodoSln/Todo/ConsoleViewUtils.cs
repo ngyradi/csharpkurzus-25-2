@@ -1,14 +1,15 @@
 ﻿using Todo.Core;
+using Todo.UI;
 
 namespace Todo
 {
-    static internal class ConsoleUI
+    internal class ConsoleViewUtils : IViewUtils
     {
         private const string _whitespace = "    ";
         public static int Height => Console.BufferHeight;
         public static int Width => Console.BufferWidth;
 
-        public static void Clear()
+        public void ClearAndWriteControls()
         {
             Console.ResetColor();
             Console.CursorVisible = false;
@@ -18,7 +19,7 @@ namespace Todo
             {
                 Console.SetCursorPosition(0, Height - 1);
 
-                string text = $"^C - Close{_whitespace}^A - Add todo{_whitespace}^W - View todos{_whitespace}^K - Save changes{_whitespace}^X - Clear";
+                string text = $"^C - Close{_whitespace}^A - Add todo{_whitespace}^W - View todos{_whitespace}^K - Save changes{_whitespace}^X - Overview";
 
                 Console.Write(text.PadRight(Width));
 
@@ -28,7 +29,7 @@ namespace Todo
             Console.CursorVisible = true;
         }
 
-        public static void ClearRegion(int startX, int startY, int width, int height)
+        public void ClearRegion(int startX, int startY, int width, int height)
         {
             for (int y = startY; y < startY + height; y++)
             {
@@ -37,12 +38,12 @@ namespace Todo
             }
         }
 
-        public static void WriteCenteredText(string text, int width)
+        public void WriteCenteredText(string text, int width)
         {
             Console.Write(text.PadRight(width / 2 + text.Length / 2).PadLeft(width));
         }
 
-        public static void WrapWithColors(Action wrappedAction, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
+        public void WrapWithColors(Action wrappedAction, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
         {
             var currentFgColor = Console.ForegroundColor;
             var currentBgColor = Console.BackgroundColor;
@@ -63,7 +64,7 @@ namespace Todo
             Console.BackgroundColor = currentBgColor;
         }
 
-        public static void WriteTodo(TodoItem todo, bool isSelected, int x, int y, int maxWidth)
+        public void WriteTodo(TodoItem todo, bool isSelected, int x, int y, int maxWidth)
         {
             var backgroundColor = isSelected ? ConsoleColor.DarkGray : ConsoleColor.Black;
 

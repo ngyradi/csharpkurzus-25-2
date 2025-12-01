@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Todo.Core;
+using Todo.UI;
 
 namespace Todo
 {
@@ -12,16 +13,19 @@ namespace Todo
             Console.OutputEncoding = Encoding.UTF8;
 
             var savePath = Path.Combine(AppContext.BaseDirectory, "save.json");
+            
             ITodoManager manager = new JsonTodoManager(savePath);
             manager.Load();
 
-            IConsoleKeyHandler keyHandler = new ConsoleKeyHandler(manager);
+            var consoleDisplay = new ConsoleDisplay();
+            var consoleViewUtils = new ConsoleViewUtils();
+            var consoleKeyHandler = new ConsoleModeHandler(manager, consoleViewUtils, consoleDisplay);
 
             ConsoleKeyInfo keyInfo;
             do
             {
-                keyInfo = Console.ReadKey();
-            } while (keyHandler.Handle(keyInfo));
+               keyInfo = Console.ReadKey();
+            } while (consoleKeyHandler.Handle(keyInfo));
         }
     }
 }

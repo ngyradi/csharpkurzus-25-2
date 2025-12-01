@@ -1,19 +1,23 @@
 ﻿using System.Diagnostics;
 using Todo.Core;
-using Todo.Views;
+using Todo.UI;
 
 namespace Todo
 {
-    internal class ConsoleKeyHandler : IConsoleKeyHandler
+    internal class ConsoleModeHandler
     {
+        private readonly ICharacterDisplay _characterDisplay;
+        private readonly IViewUtils _viewUtils;
         private readonly ITodoManager _manager;
-        private IConsoleView? _view = null;
+        private ICharacterView? _view = null;
 
-        public ConsoleKeyHandler(ITodoManager manager)
+        public ConsoleModeHandler(ITodoManager manager, IViewUtils viewUtils, ICharacterDisplay characterDisplay)
         {
             _manager = manager;
+            _characterDisplay = characterDisplay;
+            _viewUtils = viewUtils;
 
-            SwitchInputMode(InputMode.None);
+            _view = SwitchInputMode(InputMode.None);
         }
 
         public bool Handle(ConsoleKeyInfo keyInfo)
@@ -37,39 +41,28 @@ namespace Todo
         {
             if (keyInfo.Key == ConsoleKey.A)
             {
-                SwitchInputMode(InputMode.Adding);
+                _view = SwitchInputMode(InputMode.Adding);
             }
 
             if (keyInfo.Key == ConsoleKey.X)
             {
-                SwitchInputMode(InputMode.None);
+                _view = SwitchInputMode(InputMode.None);
             }
 
             if (keyInfo.Key == ConsoleKey.W)
             {
-                SwitchInputMode(InputMode.Listing);
+                _view = SwitchInputMode(InputMode.Listing);
             }
 
             if (keyInfo.Key == ConsoleKey.K)
             {
-                SwitchInputMode(InputMode.Saving);
+                _view = SwitchInputMode(InputMode.Saving);
             }
         }
 
-        private void SwitchInputMode(InputMode inputMode)
+        private ICharacterView SwitchInputMode(InputMode inputMode)
         {
-            ConsoleUI.Clear();
-
-            Console.CursorVisible = true;
-
-            _view = inputMode switch
-            {
-                InputMode.None => new ConsoleDefaultView(_manager),
-                InputMode.Adding => new ConsoleAddTodoView(_manager),
-                InputMode.Saving => new ConsoleSaveView(_manager),
-                InputMode.Listing => new ConsoleTodoView(_manager),
-                _ => throw new InvalidOperationException("Branch for set mode does not exist"),
-            };
+            return ViewFactory.CreateView(inputMode, _manager, _viewUtils, _characterDisplay);
         }
     }
 }

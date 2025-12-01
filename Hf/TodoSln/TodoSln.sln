@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36511.14 d17.14
+VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo", "Todo\Todo.csproj", "{5D22D5B5-BA91-4BCF-A0B8-7BA0E090D6D9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.Core", "Todo.Core\Todo.Core.csproj", "{B713FC60-303B-4DC8-BA89-B37DED1B7786}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.UI", "Todo.UI\Todo.UI.csproj", "{5EE7011C-8001-4A79-9315-65DBA094362A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B713FC60-303B-4DC8-BA89-B37DED1B7786}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B713FC60-303B-4DC8-BA89-B37DED1B7786}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B713FC60-303B-4DC8-BA89-B37DED1B7786}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EE7011C-8001-4A79-9315-65DBA094362A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EE7011C-8001-4A79-9315-65DBA094362A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EE7011C-8001-4A79-9315-65DBA094362A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EE7011C-8001-4A79-9315-65DBA094362A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

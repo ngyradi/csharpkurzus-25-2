@@ -1,21 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Todo.Core;
 
-namespace Todo.Views
+namespace Todo.UI
 {
-    internal class ConsoleAddTodoView : IConsoleView
+    internal class AddTodoView : ICharacterView
     {
+        private readonly ICharacterDisplay _characterDisplay;
+        private readonly IViewUtils _viewUtils;
         private readonly ITodoManager _manager;
         private readonly Stack<ConsoleKeyInfo> _enteredKeys;
 
-        public ConsoleAddTodoView(ITodoManager manager)
+        public AddTodoView(ITodoManager manager, IViewUtils viewUtils, ICharacterDisplay characterDisplay)
         {
             _manager = manager;
+            _viewUtils = viewUtils;
+            _characterDisplay = characterDisplay;
             _enteredKeys = [];
+
+            _viewUtils.ClearAndWriteControls();
+            _characterDisplay.CursorVisible = true;
 
             WriteHeader();
             Write();
@@ -23,24 +26,24 @@ namespace Todo.Views
 
         private void WriteHeader()
         {
-            ConsoleUI.WrapWithColors(() =>
+            _viewUtils.WrapWithColors(() =>
             {
 
                 var text = "Adding new Todo";
-                Console.SetCursorPosition((ConsoleUI.Width / 2) - (text.Length / 2), 0);
-                Console.WriteLine(text);
+                _characterDisplay.SetCursorPosition(_characterDisplay.Width / 2 - text.Length / 2, 0);
+                _characterDisplay.WriteLine(text);
             }, foregroundColor: ConsoleColor.Magenta);
         }
 
         private void Write()
         {
-            ConsoleUI.ClearRegion(0, 1, ConsoleUI.Width, ConsoleUI.Height - 2);
+            _viewUtils.ClearRegion(0, 1, _characterDisplay.Width, _characterDisplay.Height - 2);
 
-            Console.SetCursorPosition(0, 1);
+            _characterDisplay.SetCursorPosition(0, 1);
 
-            ConsoleUI.WrapWithColors(() =>
+            _viewUtils.WrapWithColors(() =>
             {
-                Console.WriteLine("Title;Description;DueDate");
+                _characterDisplay.WriteLine("Title;Description;DueDate");
 
             }, foregroundColor: ConsoleColor.DarkBlue);
         }
@@ -49,10 +52,10 @@ namespace Todo.Views
         {
             if (keyInfo.Key == ConsoleKey.Backspace && _enteredKeys.Count > 0 && _enteredKeys.TryPop(out _))
             {
-                Console.Write(" ");
-                if (Console.CursorLeft > 0)
+                _characterDisplay.Write(" ");
+                if (_characterDisplay.CursorLeft > 0)
                 {
-                    Console.CursorLeft--;
+                    _characterDisplay.CursorLeft--;
                 }
 
                 return;
@@ -73,9 +76,9 @@ namespace Todo.Views
                 {
                     Write();
 
-                    ConsoleUI.WrapWithColors(() =>
+                    _viewUtils.WrapWithColors(() =>
                     {
-                        Console.WriteLine(inputResult.Error);
+                        _characterDisplay.WriteLine(inputResult.Error);
                     }, foregroundColor: ConsoleColor.Red);
                 }
 
@@ -85,9 +88,9 @@ namespace Todo.Views
 
                     Write();
 
-                    ConsoleUI.WrapWithColors(() =>
+                    _viewUtils.WrapWithColors(() =>
                     {
-                        Console.WriteLine("Todo added successfully");
+                        _characterDisplay.WriteLine("Todo added successfully");
                     }, foregroundColor: ConsoleColor.DarkGreen);
                 }
 
