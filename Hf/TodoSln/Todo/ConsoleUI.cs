@@ -13,6 +13,7 @@ namespace Todo
 
         public static void Clear()
         {
+            Console.ResetColor();
             Console.CursorVisible = false;
             Console.Clear();
             Console.SetCursorPosition(0, Height - 1);

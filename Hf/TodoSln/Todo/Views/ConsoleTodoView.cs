@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Todo.Core;
 
-namespace Todo
+namespace Todo.Views
 {
     internal class ConsoleTodoView : IConsoleView
     {
@@ -172,7 +172,7 @@ namespace Todo
 
         private void WriteSeparator(int x, int y, int height, int scrollValue, int maxScrollValue)
         {
-            float scrollPercentage = maxScrollValue > 0 ? (scrollValue) / (float)(maxScrollValue) : 0;
+            float scrollPercentage = maxScrollValue > 0 ? scrollValue / (float)maxScrollValue : 0;
 
             var currentFgColor = Console.ForegroundColor;
 

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Todo.Core;
+using Todo.Views;
 
 namespace Todo
 {

@@ -1,7 +1,6 @@
-﻿
-using Todo.Core;
+﻿using Todo.Core;
 
-namespace Todo
+namespace Todo.Views
 {
     internal class ConsoleDefaultView : IConsoleView
     {

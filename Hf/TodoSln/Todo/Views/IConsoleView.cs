@@ -1,6 +1,4 @@
-﻿using Todo.Core;
-
-namespace Todo
+﻿namespace Todo.Views
 {
     internal interface IConsoleView
     {
