@@ -32,7 +32,7 @@ namespace Todo.Core
 
                 var items = JsonSerializer.Deserialize<TodoItem[]>(file) ?? [];
 
-                _items = items.ToList();
+                _items = [.. items];
             }
             catch (IOException ex)
             {

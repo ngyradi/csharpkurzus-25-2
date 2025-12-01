@@ -23,15 +23,13 @@ namespace Todo.Views
 
         private void WriteHeader()
         {
-            var currentForeground = Console.ForegroundColor;
+            ConsoleUI.WrapWithColors(() =>
+            {
 
-            Console.ForegroundColor = ConsoleColor.Magenta;
-
-            var text = "Adding new Todo";
-            Console.SetCursorPosition((ConsoleUI.Width / 2) - (text.Length / 2), 0);
-            Console.WriteLine(text);
-
-            Console.ForegroundColor = currentForeground;
+                var text = "Adding new Todo";
+                Console.SetCursorPosition((ConsoleUI.Width / 2) - (text.Length / 2), 0);
+                Console.WriteLine(text);
+            }, foregroundColor: ConsoleColor.Magenta);
         }
 
         private void Write()
@@ -40,12 +38,11 @@ namespace Todo.Views
 
             Console.SetCursorPosition(0, 1);
 
-            var currentFgColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            ConsoleUI.WrapWithColors(() =>
+            {
+                Console.WriteLine("Title;Description;DueDate");
 
-            Console.WriteLine("Title;Description;DueDate");
-
-            Console.ForegroundColor = currentFgColor;
+            }, foregroundColor: ConsoleColor.DarkBlue);
         }
 
         public void HandleKey(ConsoleKeyInfo keyInfo)
@@ -76,13 +73,10 @@ namespace Todo.Views
                 {
                     Write();
 
-                    var currentFgColor = Console.ForegroundColor;
-
-                    Console.ForegroundColor = ConsoleColor.Red;
-
-                    Console.WriteLine(inputResult.Error);
-
-                    Console.ForegroundColor = currentFgColor;
+                    ConsoleUI.WrapWithColors(() =>
+                    {
+                        Console.WriteLine(inputResult.Error);
+                    }, foregroundColor: ConsoleColor.Red);
                 }
 
                 if (inputResult.Success is not null)
@@ -91,13 +85,10 @@ namespace Todo.Views
 
                     Write();
 
-                    var currentFgColor = Console.ForegroundColor;
-
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-
-                    Console.WriteLine("Todo added successfully");
-
-                    Console.ForegroundColor = currentFgColor;
+                    ConsoleUI.WrapWithColors(() =>
+                    {
+                        Console.WriteLine("Todo added successfully");
+                    }, foregroundColor: ConsoleColor.DarkGreen);
                 }
 
                 return;

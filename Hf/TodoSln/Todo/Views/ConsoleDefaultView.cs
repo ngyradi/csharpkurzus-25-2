@@ -32,19 +32,14 @@ namespace Todo.Views
                 .OrderByDescending(t => t.DueDate)
                 .Take(3);
 
-            var currentFgColor = Console.ForegroundColor;
-            var currentBgColor = Console.BackgroundColor;
-
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.BackgroundColor = ConsoleColor.White;
-
             int columnWidth = ConsoleUI.Width / 2;
-            Console.SetCursorPosition(0, 1);
-            Console.WriteLine("Upcoming todos".PadRight(columnWidth));
 
-            Console.ForegroundColor = currentFgColor;
-            Console.BackgroundColor = currentBgColor;
+            ConsoleUI.WrapWithColors(() =>
+            {
+                Console.SetCursorPosition(0, 1);
 
+                ConsoleUI.WriteCenteredText("Upcoming todos", columnWidth);
+            }, ConsoleColor.Black, ConsoleColor.White);
 
             int lineNum = 0;
 
@@ -75,33 +70,36 @@ namespace Todo.Views
                  Items = g.OrderByDescending(t => t.DueDate).Take(3)
              });
 
-            var currentFgColor = Console.ForegroundColor;
-            var currentBgColor = Console.BackgroundColor;
-
             Console.ForegroundColor = ConsoleColor.Black;
             Console.BackgroundColor = ConsoleColor.White;
 
             int columnWidth = ConsoleUI.Width / 2;
 
             int lineNum = 0;
-            Console.SetCursorPosition(columnWidth, 1);
-            Console.WriteLine("Last completed by month".PadLeft(columnWidth));
+
+            ConsoleUI.WrapWithColors(() =>
+            {
+                Console.SetCursorPosition(columnWidth, 1);
+
+                ConsoleUI.WriteCenteredText("Last completed by month", columnWidth);
+            }, ConsoleColor.Black, ConsoleColor.White);
+
             foreach (var group in lastCompletedByMonth)
             {
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.BackgroundColor = ConsoleColor.Gray;
-                Console.SetCursorPosition(columnWidth, 2 + lineNum++);
-                Console.Write(group.Month.PadRight(columnWidth));
 
-                Console.BackgroundColor = currentBgColor;
+                ConsoleUI.WrapWithColors(() =>
+                {
+                    Console.SetCursorPosition(columnWidth, 2 + lineNum++);
+                    Console.Write(group.Month.PadRight(columnWidth));
+                }, ConsoleColor.Black, ConsoleColor.White);
 
                 foreach (var item in group.Items)
                 {
                     ConsoleUI.WriteTodo(item, false, columnWidth, 2 + lineNum++, columnWidth);
                 }
             }
-
-            Console.ForegroundColor = currentFgColor;
         }
     }
 }

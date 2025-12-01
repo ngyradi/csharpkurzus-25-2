@@ -6,7 +6,6 @@ namespace Todo
     {
         private const string _whitespace = "    ";
         public static int Height => Console.BufferHeight;
-
         public static int Width => Console.BufferWidth;
 
         public static void Clear()
@@ -14,22 +13,17 @@ namespace Todo
             Console.ResetColor();
             Console.CursorVisible = false;
             Console.Clear();
-            Console.SetCursorPosition(0, Height - 1);
 
-            var currentBackground = Console.BackgroundColor;
-            var currentForeground = Console.ForegroundColor;
+            WrapWithColors(() =>
+            {
+                Console.SetCursorPosition(0, Height - 1);
 
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
+                string text = $"^C - Close{_whitespace}^A - Add todo{_whitespace}^W - View todos{_whitespace}^K - Save changes{_whitespace}^X - Clear";
 
-            string text = $"^C - Close{_whitespace}^A - Add todo{_whitespace}^W - View todos{_whitespace}^K - Save changes{_whitespace}^X - Clear";
+                Console.Write(text.PadRight(Width));
 
-            Console.Write(text.PadRight(Width));
-
-            Console.SetCursorPosition(0, 0);
-
-            Console.BackgroundColor = currentBackground;
-            Console.ForegroundColor = currentForeground;
+                Console.SetCursorPosition(0, 0);
+            }, ConsoleColor.Black, ConsoleColor.White);
 
             Console.CursorVisible = true;
         }
@@ -43,14 +37,35 @@ namespace Todo
             }
         }
 
-        public static void WriteTodo(TodoItem todo, bool isSelected, int x, int y, int maxWidth)
+        public static void WriteCenteredText(string text, int width)
         {
+            Console.Write(text.PadRight(width / 2 + text.Length / 2).PadLeft(width));
+        }
+
+        public static void WrapWithColors(Action wrappedAction, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
+        {
+            var currentFgColor = Console.ForegroundColor;
             var currentBgColor = Console.BackgroundColor;
 
-            if (isSelected)
+            if (foregroundColor is ConsoleColor fgColor)
             {
-                Console.BackgroundColor = ConsoleColor.DarkGray;
+                Console.ForegroundColor = fgColor;
             }
+
+            if (backgroundColor is ConsoleColor bgColor)
+            {
+                Console.BackgroundColor = bgColor;
+            }
+
+            wrappedAction();
+
+            Console.ForegroundColor = currentFgColor;
+            Console.BackgroundColor = currentBgColor;
+        }
+
+        public static void WriteTodo(TodoItem todo, bool isSelected, int x, int y, int maxWidth)
+        {
+            var backgroundColor = isSelected ? ConsoleColor.DarkGray : ConsoleColor.Black;
 
             string title = isSelected ? $">{todo.Title}" : todo.Title;
             string description = todo.Description;
@@ -73,19 +88,25 @@ namespace Todo
 
             dueDate = dueDate.PadLeft(maxWidth - (title.Length + description.Length), ' ');
 
-            Console.SetCursorPosition(x, y);
-            Console.Write(new string(' ', maxWidth));
+            WrapWithColors(() =>
+            {
+                Console.SetCursorPosition(x, y);
+                Console.Write(new string(' ', maxWidth));
+            }, backgroundColor: backgroundColor);
 
-            Console.SetCursorPosition(x, y);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(title);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write(description);
+            WrapWithColors(() =>
+            {
+                Console.SetCursorPosition(x, y);
+                Console.Write(title);
+            }, ConsoleColor.White, backgroundColor);
 
-            Console.SetCursorPosition(x + maxWidth - dueDate.Length, y);
-            Console.Write(dueDate);
+            WrapWithColors(() =>
+            {
+                Console.Write(description);
 
-            Console.BackgroundColor = currentBgColor;
+                Console.SetCursorPosition(x + maxWidth - dueDate.Length, y);
+                Console.Write(dueDate);
+            }, ConsoleColor.Gray, backgroundColor);
         }
     }
 }

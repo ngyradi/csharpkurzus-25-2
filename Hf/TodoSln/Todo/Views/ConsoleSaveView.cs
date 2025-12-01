@@ -27,21 +27,22 @@ namespace Todo.Views
 
             Write();
 
-            var currentFgColor = Console.ForegroundColor;
-
             var result = _manager.Save();
 
             if (result.Success is not null)
             {
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine(result.Success);
+                ConsoleUI.WrapWithColors(() =>
+                {
+                    Console.WriteLine(result.Success);
+
+                }, foregroundColor: ConsoleColor.DarkGreen);
             }else if (result.Error is not null)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(result.Error);
+                ConsoleUI.WrapWithColors(() =>
+                {
+                    Console.WriteLine(result.Error);
+                }, foregroundColor: ConsoleColor.Red);
             }
-
-            Console.ForegroundColor = currentFgColor;
         }
 
         private void Write()
@@ -53,15 +54,12 @@ namespace Todo.Views
 
         private void WriteHeader()
         {
-            var currentFgColor = Console.ForegroundColor;
-
-            Console.ForegroundColor = ConsoleColor.Magenta;
-
-            var text = "Are you sure you want to save the changes?";
-            Console.SetCursorPosition((ConsoleUI.Width / 2) - (text.Length / 2), 0);
-            Console.WriteLine(text);
-
-            Console.ForegroundColor = currentFgColor;
+            ConsoleUI.WrapWithColors(() =>
+            {
+                var text = "Are you sure you want to save the changes?";
+                Console.SetCursorPosition((ConsoleUI.Width / 2) - (text.Length / 2), 0);
+                Console.WriteLine(text);
+            }, foregroundColor: ConsoleColor.Magenta);
         }
     }
 }
