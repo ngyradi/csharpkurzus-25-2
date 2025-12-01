@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Todo.Core\Todo.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Todo.UI.Tests" />
+  </ItemGroup>
+
 </Project>
