@@ -62,7 +62,7 @@ namespace Todo
 
         private ICharacterView SwitchInputMode(InputMode inputMode)
         {
-            return ViewFactory.CreateView(inputMode, _manager, _viewUtils, _characterDisplay);
+            return ViewFactory.CreateView(inputMode, _manager, _viewUtils, _characterDisplay, TimeProvider.System);
         }
     }
 }

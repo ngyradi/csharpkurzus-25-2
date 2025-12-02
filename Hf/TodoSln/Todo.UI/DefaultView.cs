@@ -8,11 +8,14 @@ namespace Todo.UI
         private readonly ICharacterDisplay _characterDisplay;
         private readonly ITodoManager _manager;
 
-        public DefaultView(ITodoManager manager, IViewUtils viewUtils, ICharacterDisplay characterDisplay)
+        private readonly TimeProvider _timeProvider;
+
+        public DefaultView(ITodoManager manager, IViewUtils viewUtils, ICharacterDisplay characterDisplay, TimeProvider timeProvider)
         {
             _manager = manager;
             _viewUtils = viewUtils;
             _characterDisplay = characterDisplay;
+            _timeProvider = timeProvider;
 
             _viewUtils.ClearAndWriteControls();
             _characterDisplay.CursorVisible = false;
@@ -46,7 +49,7 @@ namespace Todo.UI
         private void WriteUpcomingTodos(IEnumerable<TodoItem> todos)
         {
             var upcomingTodos = todos
-                .Where(t => !t.IsDone && t.DueDate >= DateTime.Now)
+                .Where(t => !t.IsDone && t.DueDate >= _timeProvider.GetLocalNow().DateTime)
                 .OrderByDescending(t => t.DueDate)
                 .Take(3);
 
@@ -104,9 +107,6 @@ namespace Todo.UI
 
             foreach (var group in lastCompletedByMonth)
             {
-                _characterDisplay.ForegroundColor = ConsoleColor.Black;
-                _characterDisplay.BackgroundColor = ConsoleColor.Gray;
-
                 _viewUtils.WrapWithColors(() =>
                 {
                     _characterDisplay.SetCursorPosition(columnWidth, 2 + lineNum++);
