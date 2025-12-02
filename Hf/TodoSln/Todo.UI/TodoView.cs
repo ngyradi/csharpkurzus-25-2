@@ -111,7 +111,7 @@ namespace Todo.UI
             var pendingTextColor = isPendingColumnSelected ? ConsoleColor.White : ConsoleColor.Black;
 
             string pendingText = "Pending";
-            Console.SetCursorPosition(0, 1);
+            _characterDisplay.SetCursorPosition(0, 1);
 
             _viewUtils.WrapWithColors(() =>
             {
